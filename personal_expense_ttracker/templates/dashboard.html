@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Overview · MyBudget{% endblock %}
+{% block body %}
+<main class="page-shell">
+  <header class="page-heading"><div><p class="eyebrow">OVERVIEW</p><h1>Good to see you, {{ session.username }}.</h1><p>Here’s how your money is doing.</p></div><a class="primary-button" href="{{ url_for('transactions') }}">+ Add transaction</a></header>
+  <section class="metric-grid">
+    <article class="metric-card"><span>Total income</span><strong class="positive">{{ currency }} {{ '%.2f'|format(totals.income) }}</strong><small>All recorded income</small></article>
+    <article class="metric-card"><span>Total expenses</span><strong>{{ currency }} {{ '%.2f'|format(totals.expense) }}</strong><small>All recorded expenses</small></article>
+    <article class="metric-card"><span>Net balance</span><strong class="{{ 'positive' if totals.balance >= 0 else 'negative' }}">{{ currency }} {{ '%.2f'|format(totals.balance) }}</strong><small>Income minus expenses</small></article>
+    <article class="metric-card"><span>Total saved</span><strong class="positive">{{ currency }} {{ '%.2f'|format(totals.saved) }}</strong><small>Positive net balance</small></article>
+  </section>
+  <section class="chart-grid">
+    <article class="panel chart-panel"><div class="panel-heading"><div><h2>Monthly cash flow</h2><p>Income and expenses over the past year</p></div></div><div class="chart-wrap"><canvas id="trendChart" aria-label="Monthly income and expense chart"></canvas></div></article>
+    <article class="panel chart-panel"><div class="panel-heading"><div><h2>Spending by category</h2><p>All recorded expense transactions</p></div></div><div class="chart-wrap"><canvas id="categoryChart" aria-label="Expense breakdown by category"></canvas>{% if not breakdown %}<p class="chart-empty">No expense transactions recorded yet.</p>{% endif %}</div></article>
+  </section>
+</main>
+<script>
+const trend={{ trend|tojson }},breakdown={{ breakdown|tojson }};
+new Chart(document.querySelector('#trendChart'),{type:'line',data:{labels:trend.map(x=>x.month),datasets:[{label:'Income',data:trend.map(x=>Number(x.income)),borderColor:'#059669',backgroundColor:'#10b98120',fill:true,tension:.35},{label:'Expenses',data:trend.map(x=>Number(x.expense)),borderColor:'#1e293b',backgroundColor:'#1e293b14',fill:true,tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,grid:{color:'#eef2f6'}},x:{grid:{display:false}}}}});
+new Chart(document.querySelector('#categoryChart'),{type:'doughnut',data:{labels:breakdown.map(x=>x.name),datasets:[{data:breakdown.map(x=>Number(x.amount)),backgroundColor:breakdown.map((_,i)=>`hsl(${155+i*47%360} 55% ${38+i%3*9}%)`),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}}}}});
+</script>
+{% endblock %}

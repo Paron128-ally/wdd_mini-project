@@ -1,0 +1,26 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Local databases and runtime files
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Tooling and deployment state
+.vercel/
+.vscode/
+.idea/
+*.log
+Thumbs.db
+.DS_Store

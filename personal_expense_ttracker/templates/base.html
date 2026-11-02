@@ -1,76 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
-   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
-
-<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-   
-    <title>Document</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MyBudget{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <nav class="navbar sticky-top  navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-    <a class="navbar-brand" href="#">MyBudget</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <a class="navbar-brand" href="{{ url_for('home') }}">MyBudget</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="main-nav">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/add">Add</a>
-        </li> 
-        <li class="nav-item">
-          <a class="nav-link" href="/display">History</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/limit">LIMIT</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-           Report
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/today">TODAY</a>
-            <a class="dropdown-item" href="/month">Month</a>
-            
-            <a class="dropdown-item" href="/year">Year</a>
-          </div>
-        </li>
+        {% if session.get('user_id') %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Overview</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('transactions') }}">Add transaction</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('display') }}">Transactions</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('budgets') }}">Budgets</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('categories') }}">Categories</a></li>
+        {% endif %}
       </ul>
-        <div class="form-inline my-5 my-lg-1" style="position: absolute; left: 1250px;">
-      <ul class="navbar-nav mr-auto "  >  <li class="nav-item dropdown btn-group open">
-        <a class="btn btn-primary" href="#"><i class="fa fa-user fa-fw"></i>User </a>
-  <a class="btn btn-primary dropdown-toggle "href="#" id="navbarDropdown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-   
-  </a> 
-          
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Profile</a>
-            <a class="dropdown-item" href="#">Settings</a>
-            <a class="dropdown-item" href="#">Contact-Us</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" style="color: darkred;" href="/logout">Log-Out <i class="fa fa-sign-out" aria-hidden="true"></i></a>
-          </div>
-        </li>
-        
-      
-        <div ">
-       </ul>
-      </div>
-    
+      {% if session.get('user_id') %}<span class="navbar-text mr-3">{{ session.get('username') }}</span><a class="btn btn-primary" href="{{ url_for('logout') }}">Sign out</a>{% else %}<a class="btn btn-primary" href="{{ url_for('signin') }}">Sign in</a>{% endif %}
     </div>
   </nav>
-    {% block body %} 
-    {% endblock %}
+  {% block body %}{% endblock %}
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

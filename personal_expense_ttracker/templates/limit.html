@@ -1,19 +1,10 @@
 {% extends 'base.html' %}
-
-{% block body %} 
-
-<p> Currently your MONTHLY limit is ₹ {{y}} </p>
-
-
-<form action="/limitnum" method="POST">
-
-    <p> ENTER the MONTHLY LIMIT to avoid over EXPENSES</p> <br/>
-    <input type="number" name="number" required/> <span> 
-        <button class="btn btn-warning" type="submit">ENTER</button>
-    </span>
-    
-
-
-
-</form>
+{% block title %}Budgets · MyBudget{% endblock %}
+{% block body %}
+<main class="page-shell">
+  <header class="page-heading"><div><p class="eyebrow">PLAN AHEAD</p><h1>Monthly budgets</h1><p>Compare category spending with your monthly limits.</p></div></header>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+  <section class="panel form-panel"><h2>Set a category limit</h2><form method="post" class="inline-form"><label class="sr-only" for="category_id">Expense category</label><select id="category_id" name="category_id" required><option value="">Choose category</option>{% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}</select><label class="sr-only" for="amount">Monthly amount</label><input id="amount" name="amount" type="number" min="0" step="0.01" placeholder="Monthly limit" required><button class="primary-button">Save budget</button></form></section>
+  <section class="budget-grid">{% for row in budgets %}<article class="panel budget-card"><div class="budget-top"><div><h2>{{ row.name }}</h2><span class="muted">{{ currency }} {{ '%.2f'|format(row.spent) }} spent</span></div><span class="budget-status {{ row.status|lower }}">{{ row.status }}</span></div><div class="progress-track"><span class="progress-fill {{ row.status|lower }}" style="width:{{ [row.percent,100]|min }}%"></span></div><div class="budget-bottom"><span>{{ row.percent }}% used</span><span>of {{ currency }} {{ '%.2f'|format(row.budget) }}</span></div></article>{% else %}<article class="panel empty-state">No expense categories yet. <a href="{{ url_for('categories') }}">Add a category</a> to set a budget.</article>{% endfor %}</section>
+</main>
 {% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Categories · MyBudget{% endblock %}
+{% block body %}
+<main class="page-shell narrow-shell">
+  <header class="page-heading"><div><p class="eyebrow">ORGANIZE</p><h1>Categories</h1><p>Categories belong to your account and stay private. Income sources such as salary and mutual funds are included.</p></div></header>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+  <section class="panel form-panel"><h2>Add a category</h2><form method="post" class="inline-form"><label class="sr-only" for="name">Category name</label><input id="name" name="name" maxlength="80" placeholder="Category name" required><label class="sr-only" for="type">Type</label><select id="type" name="type"><option value="EXPENSE">Expense</option><option value="INCOME">Income</option></select><button class="primary-button">Add</button></form></section>
+  <section class="panel table-panel"><div class="table-scroll"><table class="data-table"><thead><tr><th>Category</th><th>Type</th><th>Monthly budget</th></tr></thead><tbody>{% for row in categories %}<tr><td>{{ row.name }}{% if row.is_system %}<span class="subtle-tag">Default</span>{% endif %}</td><td>{{ row.type|title }}</td><td>{{ row.budget }}</td></tr>{% endfor %}</tbody></table></div></section>
+</main>
+{% endblock %}

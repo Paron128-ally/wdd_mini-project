@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if transaction else 'Add' }} transaction · MyBudget{% endblock %}
+{% block body %}
+<main class="page-shell narrow-shell">
+      <header class="page-heading"><div><p class="eyebrow">MONEY ACTIVITY</p><h1>{{ 'Edit transaction' if transaction else 'Add a transaction' }}</h1><p>Record income or an expense in your account.</p></div></header>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+  <section class="panel form-panel">
+    <form action="{{ url_for('edit_transaction', transaction_id=transaction.id) if transaction else url_for('transactions') }}" method="post" class="data-form">
+      <label for="title">Title</label><input id="title" name="title" maxlength="160" required value="{{ request.form.get('title', transaction.title if transaction else '') }}" placeholder="e.g. Grocery shopping">
+      <div class="form-grid">
+        <div><label for="type">Type</label><select id="type" name="type" required><option value="EXPENSE" {% if request.form.get('type', transaction.type if transaction else 'EXPENSE') == 'EXPENSE' %}selected{% endif %}>Expense</option><option value="INCOME" {% if request.form.get('type', transaction.type if transaction else '') == 'INCOME' %}selected{% endif %}>Income</option></select></div>
+        <div><label for="amount">Amount ({{ currency }})</label><input id="amount" name="amount" type="number" min="0" step="0.01" required value="{{ request.form.get('amount', transaction.amount if transaction else '') }}"></div>
+      </div>
+      <div class="form-grid">
+        <div><label for="category_id">Category</label><select id="category_id" name="category_id" required><option value="">Choose category</option>{% for category in categories %}<option value="{{ category.id }}" data-type="{{ category.type }}" {% if request.form.get('category_id', transaction.category_id if transaction else '')|string == category.id|string %}selected{% endif %}>{{ category.name }} · {{ category.type|title }}</option>{% endfor %}</select><small class="muted">Need another income source? Add it under Categories.</small></div>
+        <div><label for="date">Date</label><input id="date" name="date" type="date" required value="{{ request.form.get('date', transaction.date[:10] if transaction else '') }}"></div>
+      </div>
+      <label for="notes">Notes <span class="muted">(optional)</span></label><textarea id="notes" name="notes" rows="3" maxlength="1000">{{ request.form.get('notes', transaction.notes if transaction else '') }}</textarea>
+      <button class="primary-button" type="submit">{{ 'Save changes' if transaction else 'Save transaction' }}</button>
+    </form>
+  </section>
+</main>
+<script>
+const typeSelect=document.querySelector('#type'),categorySelect=document.querySelector('#category_id');
+function filterCategories(){const selected=categorySelect.selectedOptions[0];if(selected?.value&&selected.dataset.type!==typeSelect.value)categorySelect.value='';for(const option of categorySelect.options){if(option.value)option.hidden=option.dataset.type!==typeSelect.value;}}
+typeSelect.addEventListener('change',filterCategories);filterCategories();
+</script>
+{% endblock %}
